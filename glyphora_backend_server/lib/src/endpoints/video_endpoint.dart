@@ -56,38 +56,38 @@ class VideoEndpoint extends Endpoint {
   }
 
   Future<String?> createUploadDescription(
-  Session session, {
-  required String path,
-  required int fileSize,
-}) async {
-  return session.storage.createDirectFileUploadDescription(
-    storageId: 'public',
-    path: path,
-    maxFileSize: 1024 * 1024 * 1024,
-    contentLength: fileSize,
-    preventOverwrite: true,
-  );
-}
+    Session session, {
+    required String path,
+    required int fileSize,
+  }) async {
+    return session.storage.createDirectFileUploadDescription(
+      storageId: 'public',
+      path: path,
+      maxFileSize: 1024 * 1024 * 1024,
+      contentLength: fileSize,
+      preventOverwrite: true,
+    );
+  }
 
-Future<bool> verifyUpload(
-  Session session, {
-  required String path,
-}) async {
-  return session.storage.verifyDirectFileUpload(
-    storageId: 'public',
-    path: path,
-  );
-}
+  Future<bool> verifyUpload(
+    Session session, {
+    required String path,
+  }) async {
+    return session.storage.verifyDirectFileUpload(
+      storageId: 'public',
+      path: path,
+    );
+  }
 
-Future<String?> getVideoUrl(
-  Session session, {
-  required String path,
-}) async {
-  final uri = await session.storage.getPublicUrl(
-    storageId: 'public',
-    path: path,
-  );
+  Future<String?> getVideoUrl(
+    Session session, {
+    required String path,
+  }) async {
+    final uri = await session.storage.getPublicUrl(
+      storageId: 'public',
+      path: path,
+    );
 
-  return uri?.toString();
-}
+    return uri?.toString();
+  }
 }

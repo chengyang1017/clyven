@@ -12,6 +12,7 @@ import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
 import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart'
     as gcp;
+
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
   final pod = Serverpod(
@@ -21,14 +22,14 @@ void run(List<String> args) async {
   );
 
   pod.addCloudStorage(
-  gcp.GoogleCloudStorage(
-    serverpod: pod,
-    storageId: 'public',
-    public: true,
-    region: 'auto',
-    bucket: 'glyphora-video-storage-11129163384',
-  ),
-);
+    gcp.GoogleCloudStorage(
+      serverpod: pod,
+      storageId: 'public',
+      public: true,
+      region: 'auto',
+      bucket: 'glyphora-video-storage-11129163384',
+    ),
+  );
 
   pod.initializeAuthServices(
     tokenManagerBuilders: [
@@ -36,10 +37,8 @@ void run(List<String> args) async {
     ],
     identityProviderBuilders: [
       EmailIdpConfigFromPasswords(
-        sendRegistrationVerificationCode:
-            _sendRegistrationCode,
-        sendPasswordResetVerificationCode:
-            _sendPasswordResetCode,
+        sendRegistrationVerificationCode: _sendRegistrationCode,
+        sendPasswordResetVerificationCode: _sendPasswordResetCode,
       ),
     ],
   );
@@ -93,8 +92,7 @@ void run(List<String> args) async {
       StaticRoute.file(
         File(
           Uri(
-            path:
-                'web/pages/build_flutter_app.html',
+            path: 'web/pages/build_flutter_app.html',
           ).toFilePath(),
         ),
       ),
@@ -141,23 +139,17 @@ Future<void> _sendVerificationEmail({
   required String title,
   required String verificationCode,
 }) async {
-  final smtpEmail =
-      Platform.environment['SMTP_EMAIL'];
+  final smtpEmail = Platform.environment['SMTP_EMAIL'];
 
-  final smtpPassword =
-      Platform.environment[
-        'SMTP_APP_PASSWORD'
-      ];
+  final smtpPassword = Platform.environment['SMTP_APP_PASSWORD'];
 
-  if (smtpEmail == null ||
-      smtpEmail.isEmpty) {
+  if (smtpEmail == null || smtpEmail.isEmpty) {
     throw StateError(
       '没有配置 SMTP_EMAIL',
     );
   }
 
-  if (smtpPassword == null ||
-      smtpPassword.isEmpty) {
+  if (smtpPassword == null || smtpPassword.isEmpty) {
     throw StateError(
       '没有配置 SMTP_APP_PASSWORD',
     );
@@ -169,13 +161,14 @@ Future<void> _sendVerificationEmail({
   );
 
   final message = mailer.Message()
-  ..from = mailer.Address(
-    smtpEmail,
-    'Glyphora',
-  )
+    ..from = mailer.Address(
+      smtpEmail,
+      'Glyphora',
+    )
     ..recipients.add(email)
     ..subject = subject
-    ..text = '''
+    ..text =
+        '''
 $title
 
 你的验证码是：
@@ -190,7 +183,7 @@ Glyphora
 ''';
 
   await mailer.send(
-  message,
-  smtpServer,
-);
+    message,
+    smtpServer,
+  );
 }
