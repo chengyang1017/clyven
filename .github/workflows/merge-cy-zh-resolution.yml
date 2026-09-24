@@ -1,0 +1,102 @@
+name: Resolve cy zh merge
+
+on:
+  push:
+    branches:
+      - merge/cy-zh-resolution
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Install Serverpod CLI
+        run: dart pub global activate serverpod_cli 3.4.11
+
+      - name: Format manually merged source
+        run: |
+          dart format \
+            apps/clyven_app/lib/features/auth/presentation/providers/auth_provider.dart \
+            apps/clyven_app/lib/features/video/data/repositories/serverpod_video_repository.dart \
+            server/clyven_backend_server/lib/src/endpoints/video_endpoint.dart
+
+      - name: Regenerate Serverpod code
+        working-directory: server/clyven_backend_server
+        run: serverpod generate
+
+      - name: Create linear merge migration
+        working-directory: server/clyven_backend_server
+        run: serverpod create-migration --tag merge-zh-social-content
+
+      - name: Commit generated merge artifacts
+        run: |
+          if ! git diff --quiet || [ -n "$(git status --porcelain --untracked-files=all)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add \
+              apps/clyven_app/lib/features/auth/presentation/providers/auth_provider.dart \
+              apps/clyven_app/lib/features/video/data/repositories/serverpod_video_repository.dart \
+              packages/clyven_backend_client/lib/src/protocol \
+              server/clyven_backend_server/lib/src/endpoints/video_endpoint.dart \
+              server/clyven_backend_server/lib/src/generated \
+              server/clyven_backend_server/test/integration/test_tools/serverpod_test_tools.dart \
+              server/clyven_backend_server/migrations
+            git commit -m "chore: regenerate Serverpod for cy zh merge"
+            git push origin HEAD:merge/cy-zh-resolution
+          fi
+
+      - name: Check localization completeness
+        working-directory: apps/clyven_app
+        run: dart run tool/check_l10n_keys.dart
+
+      - name: Generate Flutter localizations
+        working-directory: apps/clyven_app
+        run: flutter gen-l10n
+
+      - name: Check Serverpod formatting
+        working-directory: server/clyven_backend_server
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze Flutter
+        working-directory: apps/clyven_app
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Test Flutter
+        working-directory: apps/clyven_app
+        run: flutter test
+
+      - name: Analyze Serverpod client
+        working-directory: packages/clyven_backend_client
+        run: dart analyze
+
+      - name: Analyze Serverpod backend
+        working-directory: server/clyven_backend_server
+        run: dart analyze
+
+      - name: Verify regenerated protocol is clean
+        working-directory: server/clyven_backend_server
+        run: serverpod generate
+
+      - name: Verify generated protocol consistency
+        run: |
+          git diff --exit-code --ignore-blank-lines -- \
+            packages/clyven_backend_client/lib/src/protocol \
+            server/clyven_backend_server/lib/src/generated
