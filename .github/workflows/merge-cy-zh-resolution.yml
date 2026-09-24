@@ -31,22 +31,18 @@ jobs:
       - name: Install Serverpod CLI
         run: dart pub global activate serverpod_cli 3.4.11
 
-      - name: Format manually merged source
+      - name: Format merged source
         run: |
           dart format \
             apps/clyven_app/lib/features/auth/presentation/providers/auth_provider.dart \
-            apps/clyven_app/lib/features/video/data/repositories/serverpod_video_repository.dart \
-            server/clyven_backend_server/lib/src/endpoints/video_endpoint.dart
+            apps/clyven_app/lib/features/video/data/repositories/serverpod_video_repository.dart
+          dart format server/clyven_backend_server
 
       - name: Regenerate Serverpod code
         working-directory: server/clyven_backend_server
         run: serverpod generate
 
-      - name: Create linear merge migration
-        working-directory: server/clyven_backend_server
-        run: serverpod create-migration --tag merge-zh-social-content
-
-      - name: Commit generated merge artifacts
+      - name: Commit normalized merge artifacts
         run: |
           if ! git diff --quiet || [ -n "$(git status --porcelain --untracked-files=all)" ]; then
             git config user.name "github-actions[bot]"
@@ -55,11 +51,8 @@ jobs:
               apps/clyven_app/lib/features/auth/presentation/providers/auth_provider.dart \
               apps/clyven_app/lib/features/video/data/repositories/serverpod_video_repository.dart \
               packages/clyven_backend_client/lib/src/protocol \
-              server/clyven_backend_server/lib/src/endpoints/video_endpoint.dart \
-              server/clyven_backend_server/lib/src/generated \
-              server/clyven_backend_server/test/integration/test_tools/serverpod_test_tools.dart \
-              server/clyven_backend_server/migrations
-            git commit -m "chore: regenerate Serverpod for cy zh merge"
+              server/clyven_backend_server
+            git commit -m "chore: normalize cy zh merge artifacts"
             git push origin HEAD:merge/cy-zh-resolution
           fi
 
