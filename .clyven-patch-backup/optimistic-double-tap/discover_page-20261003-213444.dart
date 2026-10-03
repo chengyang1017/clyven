@@ -116,25 +116,6 @@ class _ShortPage extends ConsumerWidget {
           autoplay: true,
           looping: true,
           active: active,
-          onDoubleTap: () async {
-            final allowed = await requireLogin(context, ref);
-            if (!allowed || !context.mounted) return;
-
-            final interaction = ref
-                .read(videoInteractionProvider(video.id))
-                .unwrapPrevious()
-                .value;
-
-            // TikTok-style behavior: double tap likes, but never unlikes.
-            if (interaction?.isLiked == true ||
-                interaction?.isChangingLike == true) {
-              return;
-            }
-
-            await ref
-                .read(videoInteractionProvider(video.id).notifier)
-                .toggleLike();
-          },
         ),
         const IgnorePointer(
           child: DecoratedBox(

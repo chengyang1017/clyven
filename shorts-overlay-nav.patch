@@ -1,0 +1,58 @@
+--- a/apps/clyven_app/lib/features/home/presentation/pages/main_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/main_page.dart
+@@ -60,6 +60,7 @@
+         : 0;
+
+     return Scaffold(
++      extendBody: _selectedIndex == 1,
+       body: IndexedStack(
+         index: _selectedIndex,
+         children: [
+@@ -73,6 +74,7 @@
+       bottomNavigationBar: HomeNavigationDock(
+         selectedIndex: _selectedIndex,
+         unreadCount: unreadCount,
++        overlayMode: _selectedIndex == 1,
+
+         onSelected: (index) {
+           if (index != _selectedIndex) {
+--- a/apps/clyven_app/lib/features/home/presentation/widgets/home_navigation_dock.dart
++++ b/apps/clyven_app/lib/features/home/presentation/widgets/home_navigation_dock.dart
+@@ -8,6 +8,7 @@
+   final int unreadCount;
+   final ValueChanged<int> onSelected;
+   final VoidCallback onCreate;
++  final bool overlayMode;
+
+   const HomeNavigationDock({
+     super.key,
+@@ -15,6 +16,7 @@
+     required this.unreadCount,
+     required this.onSelected,
+     required this.onCreate,
++    this.overlayMode = false,
+   });
+
+   @override
+@@ -107,7 +109,9 @@
+     final colors = Theme.of(context).colorScheme;
+     final brandBlue = HomeDesignTokens.brandFor(context);
+     final selected = selectedIndex == index;
+-    const inactive = Color(0xFF9C978F);
++    final inactive = overlayMode
++        ? Colors.white
++        : const Color(0xFF9C978F);
+
+     return Expanded(
+       child: InkWell(
+--- a/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
+@@ -161,7 +161,7 @@
+               Positioned(
+                 left: 16,
+                 right: 78,
+-                bottom: 24,
++                bottom: 92,
+                 child: _ShortMetadata(
+                   video: video,
+                   isOwnVideo: isOwnVideo,

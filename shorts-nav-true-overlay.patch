@@ -1,0 +1,54 @@
+--- a/apps/clyven_app/lib/features/home/presentation/pages/main_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/main_page.dart
+@@ -60,18 +60,7 @@
+         : 0;
+
+-    return Scaffold(
+-      extendBody: _selectedIndex == 1,
+-      body: IndexedStack(
+-        index: _selectedIndex,
+-        children: [
+-          const HomePage(),
+-          DiscoverPage(isActive: _selectedIndex == 1),
+-          const NotificationsPage(),
+-          const MyProfilePage(),
+-        ],
+-      ),
+-
+-      bottomNavigationBar: HomeNavigationDock(
++    final navigationDock = HomeNavigationDock(
+         selectedIndex: _selectedIndex,
+         unreadCount: unreadCount,
+         overlayMode: _selectedIndex == 1,
+@@ -111,7 +100,25 @@
+             ),
+           );
+         },
+-      ),
++      );
++
++    return Scaffold(
++      extendBody: _selectedIndex == 1,
++      body: Stack(
++        fit: StackFit.expand,
++        children: [
++          IndexedStack(
++            index: _selectedIndex,
++            children: [
++              const HomePage(),
++              DiscoverPage(isActive: _selectedIndex == 1),
++              const NotificationsPage(),
++              const MyProfilePage(),
++            ],
++          ),
++          if (_selectedIndex == 1)
++            Align(
++              alignment: Alignment.bottomCenter,
++              child: navigationDock,
++            ),
++        ],
++      ),
++      bottomNavigationBar: _selectedIndex == 1 ? null : navigationDock,
+     );
+   }
+ }

@@ -1,0 +1,293 @@
+--- a/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
+@@ -24,118 +24,152 @@
+     return Column(
+       mainAxisSize: MainAxisSize.min,
+       children: [
+-        _LikeRailButton(
++        _LikeAction(
+           videoId: videoId,
+-          initialLikeCount: initialLikeCount,
+-          onLike: onLike,
++          fallbackCount: initialLikeCount,
++          onTap: onLike,
+         ),
+         const SizedBox(height: 17),
+-        _RailButton(
++        _StaticAction(
+           icon: Icons.mode_comment_outlined,
+-          value: _formatCount(context, commentCount),
++          count: commentCount,
+           onTap: onComments,
+         ),
+         const SizedBox(height: 17),
+-        _FavoriteRailButton(
++        _FavoriteAction(
+           videoId: videoId,
+-          initialFavoriteCount: initialFavoriteCount,
+-          onFavorite: onFavorite,
++          fallbackCount: initialFavoriteCount,
++          onTap: onFavorite,
+         ),
+         const SizedBox(height: 17),
+-        _RailButton(icon: Icons.ios_share_rounded, value: '', onTap: onShare),
++        _StaticAction(
++          icon: Icons.ios_share_rounded,
++          onTap: onShare,
++        ),
+       ],
+     );
+   }
+ }
+ 
+-class _LikeRailButton extends ConsumerWidget {
++class _LikeAction extends ConsumerWidget {
+   final String videoId;
+-  final int initialLikeCount;
+-  final VoidCallback onLike;
+-
+-  const _LikeRailButton({
++  final int fallbackCount;
++  final VoidCallback onTap;
++
++  const _LikeAction({
+     required this.videoId,
+-    required this.initialLikeCount,
+-    required this.onLike,
++    required this.fallbackCount,
++    required this.onTap,
+   });
+ 
+   @override
+   Widget build(BuildContext context, WidgetRef ref) {
+-    final state = ref.watch(
+-      videoInteractionProvider(videoId).select((asyncState) {
+-        final interaction = asyncState.unwrapPrevious().value;
+-        return (
+-          isLiked: interaction?.isLiked ?? false,
+-          likeCount: interaction?.likeCount ?? initialLikeCount,
+-          isChangingLike: interaction?.isChangingLike ?? false,
+-        );
+-      }),
+-    );
+-
+-    return _RailButton(
+-      icon: state.isLiked
+-          ? Icons.favorite_rounded
+-          : Icons.favorite_border_rounded,
+-      iconColor: state.isLiked ? Colors.red : Colors.white,
+-      value: _formatCount(context, state.likeCount),
+-      onTap: state.isChangingLike ? null : onLike,
+-    );
+-  }
+-}
+-
+-class _FavoriteRailButton extends ConsumerWidget {
++    final isLiked = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) => state.unwrapPrevious().value?.isLiked ?? false,
++      ),
++    );
++    final count = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) => state.unwrapPrevious().value?.likeCount ?? fallbackCount,
++      ),
++    );
++    final busy = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) => state.unwrapPrevious().value?.isChangingLike ?? false,
++      ),
++    );
++
++    return RepaintBoundary(
++      child: _ActionButton(
++        icon: isLiked
++            ? Icons.favorite_rounded
++            : Icons.favorite_border_rounded,
++        iconColor: isLiked ? Colors.red : Colors.white,
++        countText: _formatActionCount(context, count),
++        onTap: busy ? null : onTap,
++      ),
++    );
++  }
++}
++
++class _FavoriteAction extends ConsumerWidget {
+   final String videoId;
+-  final int initialFavoriteCount;
+-  final VoidCallback onFavorite;
+-
+-  const _FavoriteRailButton({
++  final int fallbackCount;
++  final VoidCallback onTap;
++
++  const _FavoriteAction({
+     required this.videoId,
+-    required this.initialFavoriteCount,
+-    required this.onFavorite,
++    required this.fallbackCount,
++    required this.onTap,
+   });
+ 
+   @override
+   Widget build(BuildContext context, WidgetRef ref) {
+-    final state = ref.watch(
+-      videoInteractionProvider(videoId).select((asyncState) {
+-        final interaction = asyncState.unwrapPrevious().value;
+-        return (
+-          isFavorited: interaction?.isFavorited ?? false,
+-          favoriteCount:
+-              interaction?.favoriteCount ?? initialFavoriteCount,
+-          isChangingFavorite:
+-              interaction?.isChangingFavorite ?? false,
+-        );
+-      }),
+-    );
+-
+-    return _RailButton(
+-      icon: state.isFavorited
+-          ? Icons.bookmark_rounded
+-          : Icons.bookmark_border_rounded,
+-      value: _formatCount(context, state.favoriteCount),
+-      onTap: state.isChangingFavorite ? null : onFavorite,
+-    );
+-  }
+-}
+-
+-String _formatCount(BuildContext context, int value) {
+-  return NumberFormat.compact(
+-    locale: Localizations.localeOf(context).toString(),
+-  ).format(value);
+-}
+-
+-class _RailButton extends StatelessWidget {
++    final isFavorited = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) => state.unwrapPrevious().value?.isFavorited ?? false,
++      ),
++    );
++    final count = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) =>
++            state.unwrapPrevious().value?.favoriteCount ?? fallbackCount,
++      ),
++    );
++    final busy = ref.watch(
++      videoInteractionProvider(videoId).select(
++        (state) => state.unwrapPrevious().value?.isChangingFavorite ?? false,
++      ),
++    );
++
++    return RepaintBoundary(
++      child: _ActionButton(
++        icon: isFavorited
++            ? Icons.bookmark_rounded
++            : Icons.bookmark_border_rounded,
++        countText: _formatActionCount(context, count),
++        onTap: busy ? null : onTap,
++      ),
++    );
++  }
++}
++
++class _StaticAction extends StatelessWidget {
+   final IconData icon;
+-  final String value;
++  final int? count;
++  final VoidCallback onTap;
++
++  const _StaticAction({
++    required this.icon,
++    this.count,
++    required this.onTap,
++  });
++
++  @override
++  Widget build(BuildContext context) {
++    return RepaintBoundary(
++      child: _ActionButton(
++        icon: icon,
++        countText:
++            count == null ? null : _formatActionCount(context, count!),
++        onTap: onTap,
++      ),
++    );
++  }
++}
++
++class _ActionButton extends StatelessWidget {
++  final IconData icon;
++  final Color iconColor;
++  final String? countText;
+   final VoidCallback? onTap;
+-  final Color iconColor;
+-
+-  const _RailButton({
++
++  const _ActionButton({
+     required this.icon,
+-    required this.value,
++    this.iconColor = Colors.white,
++    this.countText,
+     this.onTap,
+-    this.iconColor = Colors.white,
+   });
+ 
+   @override
+@@ -146,26 +180,35 @@
+       child: SizedBox(
+         width: 54,
+         child: Column(
++          mainAxisSize: MainAxisSize.min,
+           children: [
+             Container(
+               width: 46,
+               height: 46,
++              alignment: Alignment.center,
+               decoration: BoxDecoration(
+-                color: Colors.black.withValues(alpha: .36),
++                color: const Color(0x5C000000),
+                 shape: BoxShape.circle,
+               ),
+-              alignment: Alignment.center,
+-              child: Icon(icon, color: iconColor, size: 28),
++              child: Icon(
++                icon,
++                color: iconColor,
++                size: 28,
++              ),
+             ),
+-            if (value.isNotEmpty) ...[
++            if (countText != null) ...[
+               const SizedBox(height: 4),
+-              Text(
+-                value,
+-                style: const TextStyle(
+-                  color: Colors.white,
+-                  fontSize: 11,
+-                  fontWeight: FontWeight.w800,
+-                  shadows: [Shadow(blurRadius: 6, color: Colors.black)],
++              RepaintBoundary(
++                child: Text(
++                  countText!,
++                  textAlign: TextAlign.center,
++                  style: const TextStyle(
++                    color: Color(0xFFFFFFFF),
++                    fontSize: 11,
++                    fontWeight: FontWeight.w800,
++                    height: 1,
++                    shadows: <Shadow>[],
++                  ),
+                 ),
+               ),
+             ],
+@@ -175,3 +218,9 @@
+     );
+   }
+ }
++
++String _formatActionCount(BuildContext context, int value) {
++  return NumberFormat.compact(
++    locale: Localizations.localeOf(context).toString(),
++  ).format(value);
++}

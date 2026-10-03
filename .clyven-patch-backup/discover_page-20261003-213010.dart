@@ -116,25 +116,6 @@ class _ShortPage extends ConsumerWidget {
           autoplay: true,
           looping: true,
           active: active,
-          onDoubleTap: () async {
-            final allowed = await requireLogin(context, ref);
-            if (!allowed || !context.mounted) return;
-
-            final interaction = ref
-                .read(videoInteractionProvider(video.id))
-                .unwrapPrevious()
-                .value;
-
-            // TikTok-style behavior: double tap likes, but never unlikes.
-            if (interaction?.isLiked == true ||
-                interaction?.isChangingLike == true) {
-              return;
-            }
-
-            await ref
-                .read(videoInteractionProvider(video.id).notifier)
-                .toggleLike();
-          },
         ),
         const IgnorePointer(
           child: DecoratedBox(
@@ -377,141 +358,118 @@ class _ActionRail extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _LikeAction(
+        _LikeRailButton(
           videoId: videoId,
-          fallbackCount: initialLikeCount,
-          onTap: onLike,
+          initialLikeCount: initialLikeCount,
+          onLike: onLike,
         ),
         const SizedBox(height: 17),
-        _StaticAction(
+        _RailButton(
           icon: Icons.mode_comment_outlined,
-          count: commentCount,
+          value: _formatCount(context, commentCount),
           onTap: onComments,
         ),
         const SizedBox(height: 17),
-        _FavoriteAction(
+        _FavoriteRailButton(
           videoId: videoId,
-          fallbackCount: initialFavoriteCount,
-          onTap: onFavorite,
+          initialFavoriteCount: initialFavoriteCount,
+          onFavorite: onFavorite,
         ),
         const SizedBox(height: 17),
-        _StaticAction(icon: Icons.ios_share_rounded, onTap: onShare),
+        _RailButton(icon: Icons.ios_share_rounded, value: '', onTap: onShare),
       ],
     );
   }
 }
 
-class _LikeAction extends ConsumerWidget {
+class _LikeRailButton extends ConsumerWidget {
   final String videoId;
-  final int fallbackCount;
-  final VoidCallback onTap;
+  final int initialLikeCount;
+  final VoidCallback onLike;
 
-  const _LikeAction({
+  const _LikeRailButton({
     required this.videoId,
-    required this.fallbackCount,
-    required this.onTap,
+    required this.initialLikeCount,
+    required this.onLike,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLiked = ref.watch(
-      videoInteractionProvider(
-        videoId,
-      ).select((state) => state.unwrapPrevious().value?.isLiked ?? false),
-    );
-    final count = ref.watch(
-      videoInteractionProvider(videoId).select(
-        (state) => state.unwrapPrevious().value?.likeCount ?? fallbackCount,
-      ),
-    );
-    final busy = ref.watch(
-      videoInteractionProvider(videoId).select(
-        (state) => state.unwrapPrevious().value?.isChangingLike ?? false,
-      ),
+    final state = ref.watch(
+      videoInteractionProvider(videoId).select((asyncState) {
+        final interaction = asyncState.unwrapPrevious().value;
+        return (
+          isLiked: interaction?.isLiked ?? false,
+          likeCount: interaction?.likeCount ?? initialLikeCount,
+          isChangingLike: interaction?.isChangingLike ?? false,
+        );
+      }),
     );
 
-    return RepaintBoundary(
-      child: _ActionButton(
-        icon: isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-        iconColor: isLiked ? Colors.red : Colors.white,
-        countText: _formatActionCount(context, count),
-        onTap: busy ? null : onTap,
-      ),
+    return _RailButton(
+      icon: state.isLiked
+          ? Icons.favorite_rounded
+          : Icons.favorite_border_rounded,
+      iconColor: state.isLiked ? Colors.red : Colors.white,
+      value: _formatCount(context, state.likeCount),
+      onTap: state.isChangingLike ? null : onLike,
     );
   }
 }
 
-class _FavoriteAction extends ConsumerWidget {
+class _FavoriteRailButton extends ConsumerWidget {
   final String videoId;
-  final int fallbackCount;
-  final VoidCallback onTap;
+  final int initialFavoriteCount;
+  final VoidCallback onFavorite;
 
-  const _FavoriteAction({
+  const _FavoriteRailButton({
     required this.videoId,
-    required this.fallbackCount,
-    required this.onTap,
+    required this.initialFavoriteCount,
+    required this.onFavorite,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFavorited = ref.watch(
-      videoInteractionProvider(
-        videoId,
-      ).select((state) => state.unwrapPrevious().value?.isFavorited ?? false),
-    );
-    final count = ref.watch(
-      videoInteractionProvider(videoId).select(
-        (state) => state.unwrapPrevious().value?.favoriteCount ?? fallbackCount,
-      ),
-    );
-    final busy = ref.watch(
-      videoInteractionProvider(videoId).select(
-        (state) => state.unwrapPrevious().value?.isChangingFavorite ?? false,
-      ),
+    final state = ref.watch(
+      videoInteractionProvider(videoId).select((asyncState) {
+        final interaction = asyncState.unwrapPrevious().value;
+        return (
+          isFavorited: interaction?.isFavorited ?? false,
+          favoriteCount:
+              interaction?.favoriteCount ?? initialFavoriteCount,
+          isChangingFavorite:
+              interaction?.isChangingFavorite ?? false,
+        );
+      }),
     );
 
-    return RepaintBoundary(
-      child: _ActionButton(
-        icon: isFavorited
-            ? Icons.bookmark_rounded
-            : Icons.bookmark_border_rounded,
-        countText: _formatActionCount(context, count),
-        onTap: busy ? null : onTap,
-      ),
+    return _RailButton(
+      icon: state.isFavorited
+          ? Icons.bookmark_rounded
+          : Icons.bookmark_border_rounded,
+      value: _formatCount(context, state.favoriteCount),
+      onTap: state.isChangingFavorite ? null : onFavorite,
     );
   }
 }
 
-class _StaticAction extends StatelessWidget {
-  final IconData icon;
-  final int? count;
-  final VoidCallback onTap;
-
-  const _StaticAction({required this.icon, this.count, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: _ActionButton(
-        icon: icon,
-        countText: count == null ? null : _formatActionCount(context, count!),
-        onTap: onTap,
-      ),
-    );
-  }
+String _formatCount(BuildContext context, int value) {
+  return NumberFormat.compact(
+    locale: Localizations.localeOf(context).toString(),
+  ).format(value);
 }
 
-class _ActionButton extends StatelessWidget {
+class _RailButton extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
-  final String? countText;
+  final String value;
   final VoidCallback? onTap;
+  final Color iconColor;
 
-  const _ActionButton({
+  const _RailButton({
     required this.icon,
-    this.iconColor = Colors.white,
-    this.countText,
+    required this.value,
     this.onTap,
+    this.iconColor = Colors.white,
   });
 
   @override
@@ -522,31 +480,26 @@ class _ActionButton extends StatelessWidget {
       child: SizedBox(
         width: 54,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 46,
               height: 46,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: Color(0x5C000000),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: .36),
                 shape: BoxShape.circle,
               ),
+              alignment: Alignment.center,
               child: Icon(icon, color: iconColor, size: 28),
             ),
-            if (countText != null) ...[
+            if (value.isNotEmpty) ...[
               const SizedBox(height: 4),
-              RepaintBoundary(
-                child: Text(
-                  countText!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFFFFFFFF),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    height: 1,
-                    shadows: <Shadow>[],
-                  ),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  shadows: [Shadow(blurRadius: 6, color: Colors.black)],
                 ),
               ),
             ],
@@ -555,12 +508,6 @@ class _ActionButton extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatActionCount(BuildContext context, int value) {
-  return NumberFormat.compact(
-    locale: Localizations.localeOf(context).toString(),
-  ).format(value);
 }
 
 class _Avatar extends StatelessWidget {

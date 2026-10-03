@@ -85,21 +85,7 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
       return;
     }
 
-    final optimisticLiked = !current.isLiked;
-    final optimisticLikeCount = optimisticLiked
-        ? current.likeCount + 1
-        : current.likeCount > 0
-        ? current.likeCount - 1
-        : 0;
-
-    state = AsyncData(
-      current.copyWith(
-        isLiked: optimisticLiked,
-        likeCount: optimisticLikeCount,
-        isChangingLike: true,
-      ),
-    );
-
+    state = AsyncData(current.copyWith(isChangingLike: true));
     final generation = _generation;
 
     try {
@@ -111,18 +97,16 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
       );
       if (!ref.mounted || generation != _generation) return;
 
-      final resolvedCount = liked == optimisticLiked
-          ? optimisticLikeCount
-          : liked
-          ? optimisticLikeCount + 1
-          : optimisticLikeCount > 0
-          ? optimisticLikeCount - 1
-          : 0;
-
       state = AsyncData(
         current.copyWith(
           isLiked: liked,
-          likeCount: resolvedCount,
+          likeCount: liked == current.isLiked
+              ? current.likeCount
+              : liked
+              ? current.likeCount + 1
+              : current.likeCount > 0
+              ? current.likeCount - 1
+              : 0,
           isChangingLike: false,
         ),
       );
@@ -131,8 +115,6 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
     } catch (error, stackTrace) {
       _report('VIDEO_LIKE_FAILED', error, stackTrace);
       if (!ref.mounted || generation != _generation) return;
-
-      // Roll back the optimistic UI on failure.
       state = AsyncData(current.copyWith(isChangingLike: false));
     }
   }
@@ -155,21 +137,7 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
       return;
     }
 
-    final optimisticFavorited = !current.isFavorited;
-    final optimisticFavoriteCount = optimisticFavorited
-        ? current.favoriteCount + 1
-        : current.favoriteCount > 0
-        ? current.favoriteCount - 1
-        : 0;
-
-    state = AsyncData(
-      current.copyWith(
-        isFavorited: optimisticFavorited,
-        favoriteCount: optimisticFavoriteCount,
-        isChangingFavorite: true,
-      ),
-    );
-
+    state = AsyncData(current.copyWith(isChangingFavorite: true));
     final generation = _generation;
 
     try {
@@ -180,18 +148,16 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
       );
       if (!ref.mounted || generation != _generation) return;
 
-      final resolvedCount = favorited == optimisticFavorited
-          ? optimisticFavoriteCount
-          : favorited
-          ? optimisticFavoriteCount + 1
-          : optimisticFavoriteCount > 0
-          ? optimisticFavoriteCount - 1
-          : 0;
-
       state = AsyncData(
         current.copyWith(
           isFavorited: favorited,
-          favoriteCount: resolvedCount,
+          favoriteCount: favorited == current.isFavorited
+              ? current.favoriteCount
+              : favorited
+              ? current.favoriteCount + 1
+              : current.favoriteCount > 0
+              ? current.favoriteCount - 1
+              : 0,
           isChangingFavorite: false,
         ),
       );
@@ -201,8 +167,6 @@ class VideoInteractionNotifier extends AsyncNotifier<VideoInteractionState> {
     } catch (error, stackTrace) {
       _report('VIDEO_FAVORITE_FAILED', error, stackTrace);
       if (!ref.mounted || generation != _generation) return;
-
-      // Roll back the optimistic UI on failure.
       state = AsyncData(current.copyWith(isChangingFavorite: false));
     }
   }

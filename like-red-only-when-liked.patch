@@ -1,0 +1,11 @@
+--- a/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
+@@ -319,7 +319,7 @@
+           icon: isLiked
+               ? Icons.favorite_rounded
+               : Icons.favorite_border_rounded,
+-          iconColor: Colors.red,
++          iconColor: isLiked ? Colors.red : Colors.white,
+           value: _formatCount(context, likeCount),
+           onTap: likeBusy ? null : onLike,
+         ),

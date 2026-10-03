@@ -1,0 +1,203 @@
+--- a/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
++++ b/apps/clyven_app/lib/features/home/presentation/pages/discover_page.dart
+@@ -94,16 +94,12 @@
+   @override
+   Widget build(BuildContext context, WidgetRef ref) {
+     final auth = ref.watch(authProvider).unwrapPrevious().value;
+-    final interactionAsync = ref.watch(videoInteractionProvider(video.id));
+-    final interaction = interactionAsync.unwrapPrevious().value;
+     final creatorAsync = ref.watch(creatorProfileProvider(video.authorId));
+     final creatorState = creatorAsync.unwrapPrevious().value;
+     final isOwnVideo = auth?.id == video.authorId;
+     final isFollowing = creatorState?.isFollowing ?? false;
+     final isChangingFollow =
+         creatorState?.isChangingFollow ?? creatorAsync.isLoading;
+-    final likeCount = interaction?.likeCount ?? video.likeCount;
+-    final favoriteCount = interaction?.favoriteCount ?? video.favoriteCount;
+ 
+     return Stack(
+       fit: StackFit.expand,
+@@ -152,15 +148,11 @@
+                 right: 12,
+                 bottom: 92,
+                 child: _ActionRail(
+-                  likeCount: likeCount,
+-                  favoriteCount: favoriteCount,
++                  videoId: video.id,
++                  initialLikeCount: video.likeCount,
++                  initialFavoriteCount: video.favoriteCount,
+                   commentCount: video.commentCount,
+-                  isLiked: interaction?.isLiked ?? false,
+-                  isFavorited: interaction?.isFavorited ?? false,
+-                  likeBusy: interaction?.isChangingLike ?? false,
+-                  favoriteBusy: interaction?.isChangingFavorite ?? false,
+                   onLike: () async {
+-                    if (interaction?.isChangingLike == true) return;
+                     final allowed = await requireLogin(context, ref);
+                     if (!allowed || !context.mounted) return;
+                     await ref
+@@ -168,7 +160,6 @@
+                         .toggleLike();
+                   },
+                   onFavorite: () async {
+-                    if (interaction?.isChangingFavorite == true) return;
+                     final allowed = await requireLogin(context, ref);
+                     if (!allowed || !context.mounted) return;
+                     await ref
+@@ -342,26 +333,20 @@
+ }
+ 
+ class _ActionRail extends StatelessWidget {
+-  final int likeCount;
+-  final int favoriteCount;
++  final String videoId;
++  final int initialLikeCount;
++  final int initialFavoriteCount;
+   final int commentCount;
+-  final bool isLiked;
+-  final bool isFavorited;
+-  final bool likeBusy;
+-  final bool favoriteBusy;
+   final VoidCallback onLike;
+   final VoidCallback onFavorite;
+   final VoidCallback onComments;
+   final VoidCallback onShare;
+ 
+   const _ActionRail({
+-    required this.likeCount,
+-    required this.favoriteCount,
++    required this.videoId,
++    required this.initialLikeCount,
++    required this.initialFavoriteCount,
+     required this.commentCount,
+-    required this.isLiked,
+-    required this.isFavorited,
+-    required this.likeBusy,
+-    required this.favoriteBusy,
+     required this.onLike,
+     required this.onFavorite,
+     required this.onComments,
+@@ -373,13 +358,10 @@
+     return Column(
+       mainAxisSize: MainAxisSize.min,
+       children: [
+-        _RailButton(
+-          icon: isLiked
+-              ? Icons.favorite_rounded
+-              : Icons.favorite_border_rounded,
+-          iconColor: isLiked ? Colors.red : Colors.white,
+-          value: _formatCount(context, likeCount),
+-          onTap: likeBusy ? null : onLike,
++        _LikeRailButton(
++          videoId: videoId,
++          initialLikeCount: initialLikeCount,
++          onLike: onLike,
+         ),
+         const SizedBox(height: 17),
+         _RailButton(
+@@ -388,24 +370,93 @@
+           onTap: onComments,
+         ),
+         const SizedBox(height: 17),
+-        _RailButton(
+-          icon: isFavorited
+-              ? Icons.bookmark_rounded
+-              : Icons.bookmark_border_rounded,
+-          value: _formatCount(context, favoriteCount),
+-          onTap: favoriteBusy ? null : onFavorite,
++        _FavoriteRailButton(
++          videoId: videoId,
++          initialFavoriteCount: initialFavoriteCount,
++          onFavorite: onFavorite,
+         ),
+         const SizedBox(height: 17),
+         _RailButton(icon: Icons.ios_share_rounded, value: '', onTap: onShare),
+       ],
+     );
+   }
+-
+-  String _formatCount(BuildContext context, int value) {
+-    return NumberFormat.compact(
+-      locale: Localizations.localeOf(context).toString(),
+-    ).format(value);
+-  }
++}
++
++class _LikeRailButton extends ConsumerWidget {
++  final String videoId;
++  final int initialLikeCount;
++  final VoidCallback onLike;
++
++  const _LikeRailButton({
++    required this.videoId,
++    required this.initialLikeCount,
++    required this.onLike,
++  });
++
++  @override
++  Widget build(BuildContext context, WidgetRef ref) {
++    final state = ref.watch(
++      videoInteractionProvider(videoId).select((asyncState) {
++        final interaction = asyncState.unwrapPrevious().value;
++        return (
++          isLiked: interaction?.isLiked ?? false,
++          likeCount: interaction?.likeCount ?? initialLikeCount,
++          isChangingLike: interaction?.isChangingLike ?? false,
++        );
++      }),
++    );
++
++    return _RailButton(
++      icon: state.isLiked
++          ? Icons.favorite_rounded
++          : Icons.favorite_border_rounded,
++      iconColor: state.isLiked ? Colors.red : Colors.white,
++      value: _formatCount(context, state.likeCount),
++      onTap: state.isChangingLike ? null : onLike,
++    );
++  }
++}
++
++class _FavoriteRailButton extends ConsumerWidget {
++  final String videoId;
++  final int initialFavoriteCount;
++  final VoidCallback onFavorite;
++
++  const _FavoriteRailButton({
++    required this.videoId,
++    required this.initialFavoriteCount,
++    required this.onFavorite,
++  });
++
++  @override
++  Widget build(BuildContext context, WidgetRef ref) {
++    final state = ref.watch(
++      videoInteractionProvider(videoId).select((asyncState) {
++        final interaction = asyncState.unwrapPrevious().value;
++        return (
++          isFavorited: interaction?.isFavorited ?? false,
++          favoriteCount:
++              interaction?.favoriteCount ?? initialFavoriteCount,
++          isChangingFavorite:
++              interaction?.isChangingFavorite ?? false,
++        );
++      }),
++    );
++
++    return _RailButton(
++      icon: state.isFavorited
++          ? Icons.bookmark_rounded
++          : Icons.bookmark_border_rounded,
++      value: _formatCount(context, state.favoriteCount),
++      onTap: state.isChangingFavorite ? null : onFavorite,
++    );
++  }
++}
++
++String _formatCount(BuildContext context, int value) {
++  return NumberFormat.compact(
++    locale: Localizations.localeOf(context).toString(),
++  ).format(value);
+ }
+ 
+ class _RailButton extends StatelessWidget {
