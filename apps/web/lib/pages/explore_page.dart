@@ -14,7 +14,11 @@ class ExplorePage extends StatefulComponent {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  static const _pageSize = 24;
+
   bool loading = true;
+  bool loadingMore = false;
+  bool hasMore = true;
   String? error;
   List<_FeedVideo> items = const [];
 
@@ -24,27 +28,51 @@ class _ExplorePageState extends State<ExplorePage> {
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      loading = true;
-      error = null;
-    });
+  Future<void> _load({bool reset = true}) async {
+    if (!reset && (loadingMore || !hasMore)) {
+      return;
+    }
+
+    if (reset) {
+      setState(() {
+        loading = true;
+        loadingMore = false;
+        error = null;
+      });
+    } else {
+      setState(() {
+        loadingMore = true;
+        error = null;
+      });
+    }
 
     try {
-      final feedItems = await webClient.video.getVideoFeed();
+      final offset = reset ? 0 : items.length;
 
-      final result = feedItems
+      final feedPage = await webClient.video.getVideoFeed(
+        limit: _pageSize,
+        offset: offset,
+      );
+
+      final result = feedPage.items
           .map((item) => _FeedVideo(video: item.video, coverUrl: item.coverUrl))
           .toList();
 
+      if (!mounted) return;
+
       setState(() {
-        items = result;
+        items = reset ? result : [...items, ...result];
+        hasMore = feedPage.hasMore;
         loading = false;
+        loadingMore = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         error = e.toString();
         loading = false;
+        loadingMore = false;
       });
     }
   }
@@ -59,9 +87,11 @@ class _ExplorePageState extends State<ExplorePage> {
           h2([.text(l10n.latestVideos)]),
           p([.text(l10n.latestVideosSubtitle)]),
         ]),
-        button(classes: 'secondary-button', onClick: loading ? null : _load, [
-          .text(loading ? l10n.loading : l10n.refresh),
-        ]),
+        button(
+          classes: 'secondary-button',
+          onClick: loading ? null : () => _load(),
+          [.text(loading ? l10n.loading : l10n.refresh)],
+        ),
       ]),
       if (error != null) div(classes: 'page-message error', [.text(error!)]),
       if (loading)
@@ -76,6 +106,14 @@ class _ExplorePageState extends State<ExplorePage> {
       else
         div(classes: 'video-grid', [
           for (final item in items) _videoCard(item),
+        ]),
+      if (!loading && items.isNotEmpty && hasMore)
+        div(classes: 'explore-load-more', [
+          button(
+            classes: 'secondary-button',
+            onClick: loadingMore ? null : () => _load(reset: false),
+            [.text(loadingMore ? l10n.loadingMore : l10n.loadMore)],
+          ),
         ]),
     ]);
   }

@@ -72,6 +72,8 @@ class WebStrings {
       _('Public videos from Glyphora creators.', 'Glyphora 创作者发布的公开视频。');
   String get loading => _('Loading...', '加载中...');
   String get refresh => _('Refresh', '刷新');
+  String get loadMore => _('Load more', '????');
+  String get loadingMore => _('Loading more...', '??????...');
   String get noPublicVideos => _('No public videos yet', '还没有公开视频');
   String get noPublicVideosHint =>
       _('Published videos will appear here.', '发布后的视频会显示在这里。');

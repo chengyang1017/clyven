@@ -3038,6 +3038,16 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<_i26.VideoContentType?>(),
               nullable: true,
             ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
           call:
               (
@@ -3047,6 +3057,8 @@ class Endpoints extends _i1.EndpointDispatch {
                   (endpoints['video'] as _i19.VideoEndpoint).getVideoFeed(
                     session,
                     contentType: params['contentType'],
+                    limit: params['limit'],
+                    offset: params['offset'],
                   ),
         ),
         'getVideos': _i1.MethodConnector(

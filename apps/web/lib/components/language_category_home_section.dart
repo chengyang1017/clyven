@@ -85,11 +85,10 @@ class _LanguageCategoryHomeSectionState
 
   Future<void> _load() async {
     try {
-      final feedItems = await webClient.video.getVideoFeed();
+      final feedPage = await webClient.video.getVideoFeed(limit: 12, offset: 0);
 
-      final cards = feedItems
+      final cards = feedPage.items
           .where((item) => item.video.id != null)
-          .take(12)
           .map(
             (item) =>
                 _HomeVideoCard(video: item.video, coverUrl: item.coverUrl),

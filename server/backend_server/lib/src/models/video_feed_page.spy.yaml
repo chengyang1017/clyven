@@ -1,0 +1,4 @@
+class: VideoFeedPage
+fields:
+  items: List<VideoFeedItem>
+  hasMore: bool

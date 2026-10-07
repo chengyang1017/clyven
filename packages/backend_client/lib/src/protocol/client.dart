@@ -94,7 +94,7 @@ import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment_in
     as _i45;
 import 'package:glyphora_backend_client/src/protocol/video_content_type.dart'
     as _i46;
-import 'package:glyphora_backend_client/src/protocol/video_feed_item.dart'
+import 'package:glyphora_backend_client/src/protocol/video_feed_page.dart'
     as _i47;
 import 'package:glyphora_backend_client/src/protocol/video_series.dart' as _i48;
 import 'package:glyphora_backend_client/src/protocol/word_list.dart' as _i49;
@@ -1616,12 +1616,18 @@ class EndpointVideo extends _i2.EndpointRef {
     },
   );
 
-  _i3.Future<List<_i47.VideoFeedItem>> getVideoFeed({
+  _i3.Future<_i47.VideoFeedPage> getVideoFeed({
     _i46.VideoContentType? contentType,
-  }) => caller.callServerEndpoint<List<_i47.VideoFeedItem>>(
+    required int limit,
+    required int offset,
+  }) => caller.callServerEndpoint<_i47.VideoFeedPage>(
     'video',
     'getVideoFeed',
-    {'contentType': contentType},
+    {
+      'contentType': contentType,
+      'limit': limit,
+      'offset': offset,
+    },
   );
 
   _i3.Future<List<_i8.Video>> getVideos({_i46.VideoContentType? contentType}) =>

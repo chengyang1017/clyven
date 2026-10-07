@@ -271,10 +271,15 @@ class VideoEndpoint extends Endpoint {
     return savedVideo;
   }
 
-  Future<List<VideoFeedItem>> getVideoFeed(
+  Future<VideoFeedPage> getVideoFeed(
     Session session, {
     VideoContentType? contentType,
+    int limit = 24,
+    int offset = 0,
   }) async {
+    final safeLimit = limit < 1 ? 1 : (limit > 100 ? 100 : limit);
+    final safeOffset = offset < 0 ? 0 : offset;
+
     final videos = await Video.db.find(
       session,
       where: contentType == null
@@ -287,10 +292,15 @@ class VideoEndpoint extends Endpoint {
                 table.contentType.equals(contentType),
       orderBy: (table) => table.createdAt,
       orderDescending: true,
+      limit: safeLimit + 1,
+      offset: safeOffset,
     );
 
+    final hasMore = videos.length > safeLimit;
+    final visibleVideos = videos.take(safeLimit).toList();
+
     final items = await Future.wait(
-      videos.map((video) async {
+      visibleVideos.map((video) async {
         String? coverUrl;
 
         final coverKey = video.coverStorageKey?.trim();
@@ -326,10 +336,16 @@ class VideoEndpoint extends Endpoint {
       'VIDEO_FEED_REQUEST '
       'viewerUserId=${session.authenticated?.userIdentifier ?? 'anonymous'} '
       'contentType=${contentType?.name ?? 'all'} '
-      'returnedCount=${items.length}',
+      'limit=$safeLimit '
+      'offset=$safeOffset '
+      'returnedCount=${items.length} '
+      'hasMore=$hasMore',
     );
 
-    return items;
+    return VideoFeedPage(
+      items: items,
+      hasMore: hasMore,
+    );
   }
 
   Future<List<Video>> getVideos(
