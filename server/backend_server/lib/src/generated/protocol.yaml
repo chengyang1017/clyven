@@ -131,6 +131,7 @@ subtitle:
 video:
   - getCurrentUserId:
   - create:
+  - getVideoFeed:
   - getVideos:
   - getMyVideos:
   - getVideo:

@@ -31,24 +31,11 @@ class _ExplorePageState extends State<ExplorePage> {
     });
 
     try {
-      final videos = await webClient.video.getVideos();
+      final feedItems = await webClient.video.getVideoFeed();
 
-      final result = await Future.wait(
-        videos.map((video) async {
-          String? coverUrl;
-
-          final coverKey = video.coverStorageKey;
-          if (coverKey != null && coverKey.isNotEmpty) {
-            try {
-              coverUrl = await webClient.video.getVideoUrl(path: coverKey);
-            } catch (_) {
-              coverUrl = null;
-            }
-          }
-
-          return _FeedVideo(video: video, coverUrl: coverUrl);
-        }),
-      );
+      final result = feedItems
+          .map((item) => _FeedVideo(video: item.video, coverUrl: item.coverUrl))
+          .toList();
 
       setState(() {
         items = result;

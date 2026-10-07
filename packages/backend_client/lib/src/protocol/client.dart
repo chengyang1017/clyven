@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
@@ -95,13 +94,15 @@ import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment_in
     as _i45;
 import 'package:glyphora_backend_client/src/protocol/video_content_type.dart'
     as _i46;
-import 'package:glyphora_backend_client/src/protocol/video_series.dart' as _i47;
-import 'package:glyphora_backend_client/src/protocol/word_list.dart' as _i48;
+import 'package:glyphora_backend_client/src/protocol/video_feed_item.dart'
+    as _i47;
+import 'package:glyphora_backend_client/src/protocol/video_series.dart' as _i48;
+import 'package:glyphora_backend_client/src/protocol/word_list.dart' as _i49;
 import 'package:glyphora_backend_client/src/protocol/word_list_detail.dart'
-    as _i49;
-import 'package:glyphora_backend_client/src/protocol/greetings/greeting.dart'
     as _i50;
-import 'protocol.dart' as _i51;
+import 'package:glyphora_backend_client/src/protocol/greetings/greeting.dart'
+    as _i51;
+import 'protocol.dart' as _i52;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -1615,6 +1616,14 @@ class EndpointVideo extends _i2.EndpointRef {
     },
   );
 
+  _i3.Future<List<_i47.VideoFeedItem>> getVideoFeed({
+    _i46.VideoContentType? contentType,
+  }) => caller.callServerEndpoint<List<_i47.VideoFeedItem>>(
+    'video',
+    'getVideoFeed',
+    {'contentType': contentType},
+  );
+
   _i3.Future<List<_i8.Video>> getVideos({_i46.VideoContentType? contentType}) =>
       caller.callServerEndpoint<List<_i8.Video>>(
         'video',
@@ -1636,13 +1645,13 @@ class EndpointVideo extends _i2.EndpointRef {
         {'id': id},
       );
 
-  _i3.Future<_i47.VideoSeries> createSeries({
+  _i3.Future<_i48.VideoSeries> createSeries({
     required String title,
     required String description,
     String? coverStorageKey,
     String? languageCode,
     required String category,
-  }) => caller.callServerEndpoint<_i47.VideoSeries>(
+  }) => caller.callServerEndpoint<_i48.VideoSeries>(
     'video',
     'createSeries',
     {
@@ -1654,16 +1663,16 @@ class EndpointVideo extends _i2.EndpointRef {
     },
   );
 
-  _i3.Future<List<_i47.VideoSeries>> getCreatorSeries({
+  _i3.Future<List<_i48.VideoSeries>> getCreatorSeries({
     required String creatorId,
-  }) => caller.callServerEndpoint<List<_i47.VideoSeries>>(
+  }) => caller.callServerEndpoint<List<_i48.VideoSeries>>(
     'video',
     'getCreatorSeries',
     {'creatorId': creatorId},
   );
 
-  _i3.Future<_i47.VideoSeries?> getSeries({required int seriesId}) =>
-      caller.callServerEndpoint<_i47.VideoSeries?>(
+  _i3.Future<_i48.VideoSeries?> getSeries({required int seriesId}) =>
+      caller.callServerEndpoint<_i48.VideoSeries?>(
         'video',
         'getSeries',
         {'seriesId': seriesId},
@@ -1808,17 +1817,17 @@ class EndpointWordList extends _i2.EndpointRef {
   @override
   String get name => 'wordList';
 
-  _i3.Future<List<_i48.WordList>> getLists() =>
-      caller.callServerEndpoint<List<_i48.WordList>>(
+  _i3.Future<List<_i49.WordList>> getLists() =>
+      caller.callServerEndpoint<List<_i49.WordList>>(
         'wordList',
         'getLists',
         {},
       );
 
-  _i3.Future<_i49.WordListDetail?> getListDetail({
+  _i3.Future<_i50.WordListDetail?> getListDetail({
     required int listId,
     required String explanationLanguageCode,
-  }) => caller.callServerEndpoint<_i49.WordListDetail?>(
+  }) => caller.callServerEndpoint<_i50.WordListDetail?>(
     'wordList',
     'getListDetail',
     {
@@ -1838,8 +1847,8 @@ class EndpointGreeting extends _i2.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i50.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i50.Greeting>(
+  _i3.Future<_i51.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i51.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -1877,7 +1886,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i51.Protocol(),
+         _i52.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

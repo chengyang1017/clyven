@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'admin_member.dart' as _i2;
 import 'admin_permission.dart' as _i3;
@@ -80,56 +79,60 @@ import 'video_comment_dto.dart' as _i66;
 import 'video_comment_row.dart' as _i67;
 import 'video_content_type.dart' as _i68;
 import 'video_favorite.dart' as _i69;
-import 'video_like.dart' as _i70;
-import 'video_series.dart' as _i71;
-import 'video_status.dart' as _i72;
-import 'watch_history.dart' as _i73;
-import 'word_list.dart' as _i74;
-import 'word_list_detail.dart' as _i75;
-import 'word_list_item.dart' as _i76;
-import 'word_list_item_detail.dart' as _i77;
-import 'package:glyphora_backend_client/src/protocol/asr_job.dart' as _i78;
-import 'package:glyphora_backend_client/src/protocol/video.dart' as _i79;
+import 'video_feed_item.dart' as _i70;
+import 'video_like.dart' as _i71;
+import 'video_series.dart' as _i72;
+import 'video_status.dart' as _i73;
+import 'watch_history.dart' as _i74;
+import 'word_list.dart' as _i75;
+import 'word_list_detail.dart' as _i76;
+import 'word_list_item.dart' as _i77;
+import 'word_list_item_detail.dart' as _i78;
+import 'package:glyphora_backend_client/src/protocol/asr_job.dart' as _i79;
+import 'package:glyphora_backend_client/src/protocol/video.dart' as _i80;
 import 'package:glyphora_backend_client/src/protocol/subtitle_track.dart'
-    as _i80;
-import 'package:glyphora_backend_client/src/protocol/admin_member.dart' as _i81;
-import 'package:glyphora_backend_client/src/protocol/admin_role.dart' as _i82;
+    as _i81;
+import 'package:glyphora_backend_client/src/protocol/admin_member.dart' as _i82;
+import 'package:glyphora_backend_client/src/protocol/admin_role.dart' as _i83;
 import 'package:glyphora_backend_client/src/protocol/admin_permission.dart'
-    as _i83;
-import 'package:glyphora_backend_client/src/protocol/admin_role_permission.dart'
     as _i84;
-import 'package:glyphora_backend_client/src/protocol/dictionary_entry_detail.dart'
+import 'package:glyphora_backend_client/src/protocol/admin_role_permission.dart'
     as _i85;
-import 'package:glyphora_backend_client/src/protocol/dictionary_import_profile.dart'
+import 'package:glyphora_backend_client/src/protocol/dictionary_entry_detail.dart'
     as _i86;
-import 'package:glyphora_backend_client/src/protocol/entry_knowledge_state.dart'
+import 'package:glyphora_backend_client/src/protocol/dictionary_import_profile.dart'
     as _i87;
-import 'package:glyphora_backend_client/src/protocol/knowledge_state_result.dart'
+import 'package:glyphora_backend_client/src/protocol/entry_knowledge_state.dart'
     as _i88;
-import 'package:glyphora_backend_client/src/protocol/knowledge_state_query.dart'
+import 'package:glyphora_backend_client/src/protocol/knowledge_state_result.dart'
     as _i89;
-import 'package:glyphora_backend_client/src/protocol/app_notification.dart'
+import 'package:glyphora_backend_client/src/protocol/knowledge_state_query.dart'
     as _i90;
-import 'package:glyphora_backend_client/src/protocol/script_conversion_profile.dart'
+import 'package:glyphora_backend_client/src/protocol/app_notification.dart'
     as _i91;
-import 'package:glyphora_backend_client/src/protocol/script_conversion_entry.dart'
+import 'package:glyphora_backend_client/src/protocol/script_conversion_profile.dart'
     as _i92;
-import 'package:glyphora_backend_client/src/protocol/watch_history.dart'
+import 'package:glyphora_backend_client/src/protocol/script_conversion_entry.dart'
     as _i93;
-import 'package:glyphora_backend_client/src/protocol/subtitle_search_result.dart'
+import 'package:glyphora_backend_client/src/protocol/watch_history.dart'
     as _i94;
-import 'package:glyphora_backend_client/src/protocol/subtitle_cue_detail.dart'
+import 'package:glyphora_backend_client/src/protocol/subtitle_search_result.dart'
     as _i95;
-import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment.dart'
+import 'package:glyphora_backend_client/src/protocol/subtitle_cue_detail.dart'
     as _i96;
-import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment_input.dart'
+import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment.dart'
     as _i97;
-import 'package:glyphora_backend_client/src/protocol/video_series.dart' as _i98;
-import 'package:glyphora_backend_client/src/protocol/word_list.dart' as _i99;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:glyphora_backend_client/src/protocol/subtitle_karaoke_segment_input.dart'
+    as _i98;
+import 'package:glyphora_backend_client/src/protocol/video_feed_item.dart'
+    as _i99;
+import 'package:glyphora_backend_client/src/protocol/video_series.dart'
     as _i100;
+import 'package:glyphora_backend_client/src/protocol/word_list.dart' as _i101;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i102;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i101;
+    as _i103;
 export 'admin_member.dart';
 export 'admin_permission.dart';
 export 'admin_role.dart';
@@ -198,6 +201,7 @@ export 'video_comment_dto.dart';
 export 'video_comment_row.dart';
 export 'video_content_type.dart';
 export 'video_favorite.dart';
+export 'video_feed_item.dart';
 export 'video_like.dart';
 export 'video_series.dart';
 export 'video_status.dart';
@@ -446,29 +450,32 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i69.VideoFavorite) {
       return _i69.VideoFavorite.fromJson(data) as T;
     }
-    if (t == _i70.VideoLike) {
-      return _i70.VideoLike.fromJson(data) as T;
+    if (t == _i70.VideoFeedItem) {
+      return _i70.VideoFeedItem.fromJson(data) as T;
     }
-    if (t == _i71.VideoSeries) {
-      return _i71.VideoSeries.fromJson(data) as T;
+    if (t == _i71.VideoLike) {
+      return _i71.VideoLike.fromJson(data) as T;
     }
-    if (t == _i72.VideoStatus) {
-      return _i72.VideoStatus.fromJson(data) as T;
+    if (t == _i72.VideoSeries) {
+      return _i72.VideoSeries.fromJson(data) as T;
     }
-    if (t == _i73.WatchHistory) {
-      return _i73.WatchHistory.fromJson(data) as T;
+    if (t == _i73.VideoStatus) {
+      return _i73.VideoStatus.fromJson(data) as T;
     }
-    if (t == _i74.WordList) {
-      return _i74.WordList.fromJson(data) as T;
+    if (t == _i74.WatchHistory) {
+      return _i74.WatchHistory.fromJson(data) as T;
     }
-    if (t == _i75.WordListDetail) {
-      return _i75.WordListDetail.fromJson(data) as T;
+    if (t == _i75.WordList) {
+      return _i75.WordList.fromJson(data) as T;
     }
-    if (t == _i76.WordListItem) {
-      return _i76.WordListItem.fromJson(data) as T;
+    if (t == _i76.WordListDetail) {
+      return _i76.WordListDetail.fromJson(data) as T;
     }
-    if (t == _i77.WordListItemDetail) {
-      return _i77.WordListItemDetail.fromJson(data) as T;
+    if (t == _i77.WordListItem) {
+      return _i77.WordListItem.fromJson(data) as T;
+    }
+    if (t == _i78.WordListItemDetail) {
+      return _i78.WordListItemDetail.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AdminMember?>()) {
       return (data != null ? _i2.AdminMember.fromJson(data) : null) as T;
@@ -728,29 +735,32 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i69.VideoFavorite?>()) {
       return (data != null ? _i69.VideoFavorite.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i70.VideoLike?>()) {
-      return (data != null ? _i70.VideoLike.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i70.VideoFeedItem?>()) {
+      return (data != null ? _i70.VideoFeedItem.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i71.VideoSeries?>()) {
-      return (data != null ? _i71.VideoSeries.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i71.VideoLike?>()) {
+      return (data != null ? _i71.VideoLike.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i72.VideoStatus?>()) {
-      return (data != null ? _i72.VideoStatus.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i72.VideoSeries?>()) {
+      return (data != null ? _i72.VideoSeries.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i73.WatchHistory?>()) {
-      return (data != null ? _i73.WatchHistory.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i73.VideoStatus?>()) {
+      return (data != null ? _i73.VideoStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i74.WordList?>()) {
-      return (data != null ? _i74.WordList.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i74.WatchHistory?>()) {
+      return (data != null ? _i74.WatchHistory.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i75.WordListDetail?>()) {
-      return (data != null ? _i75.WordListDetail.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i75.WordList?>()) {
+      return (data != null ? _i75.WordList.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i76.WordListItem?>()) {
-      return (data != null ? _i76.WordListItem.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i76.WordListDetail?>()) {
+      return (data != null ? _i76.WordListDetail.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i77.WordListItemDetail?>()) {
-      return (data != null ? _i77.WordListItemDetail.fromJson(data) : null)
+    if (t == _i1.getType<_i77.WordListItem?>()) {
+      return (data != null ? _i77.WordListItem.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i78.WordListItemDetail?>()) {
+      return (data != null ? _i78.WordListItemDetail.fromJson(data) : null)
           as T;
     }
     if (t == List<_i66.VideoCommentDto>) {
@@ -868,9 +878,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i77.WordListItemDetail>) {
+    if (t == List<_i78.WordListItemDetail>) {
       return (data as List)
-              .map((e) => deserialize<_i77.WordListItemDetail>(e))
+              .map((e) => deserialize<_i78.WordListItemDetail>(e))
               .toList()
           as T;
     }
@@ -880,99 +890,99 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == List<_i78.AsrJob>) {
-      return (data as List).map((e) => deserialize<_i78.AsrJob>(e)).toList()
+    if (t == List<_i79.AsrJob>) {
+      return (data as List).map((e) => deserialize<_i79.AsrJob>(e)).toList()
           as T;
     }
-    if (t == List<_i79.Video>) {
-      return (data as List).map((e) => deserialize<_i79.Video>(e)).toList()
+    if (t == List<_i80.Video>) {
+      return (data as List).map((e) => deserialize<_i80.Video>(e)).toList()
           as T;
     }
-    if (t == List<_i80.SubtitleTrack>) {
+    if (t == List<_i81.SubtitleTrack>) {
       return (data as List)
-              .map((e) => deserialize<_i80.SubtitleTrack>(e))
+              .map((e) => deserialize<_i81.SubtitleTrack>(e))
               .toList()
           as T;
     }
-    if (t == List<_i81.AdminMember>) {
+    if (t == List<_i82.AdminMember>) {
       return (data as List)
-              .map((e) => deserialize<_i81.AdminMember>(e))
+              .map((e) => deserialize<_i82.AdminMember>(e))
               .toList()
           as T;
     }
-    if (t == List<_i82.AdminRole>) {
-      return (data as List).map((e) => deserialize<_i82.AdminRole>(e)).toList()
+    if (t == List<_i83.AdminRole>) {
+      return (data as List).map((e) => deserialize<_i83.AdminRole>(e)).toList()
           as T;
     }
-    if (t == List<_i83.AdminPermission>) {
+    if (t == List<_i84.AdminPermission>) {
       return (data as List)
-              .map((e) => deserialize<_i83.AdminPermission>(e))
+              .map((e) => deserialize<_i84.AdminPermission>(e))
               .toList()
           as T;
     }
-    if (t == List<_i84.AdminRolePermission>) {
+    if (t == List<_i85.AdminRolePermission>) {
       return (data as List)
-              .map((e) => deserialize<_i84.AdminRolePermission>(e))
+              .map((e) => deserialize<_i85.AdminRolePermission>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i85.DictionaryEntryDetail>) {
+    if (t == List<_i86.DictionaryEntryDetail>) {
       return (data as List)
-              .map((e) => deserialize<_i85.DictionaryEntryDetail>(e))
+              .map((e) => deserialize<_i86.DictionaryEntryDetail>(e))
               .toList()
           as T;
     }
-    if (t == List<_i86.DictionaryImportProfile>) {
+    if (t == List<_i87.DictionaryImportProfile>) {
       return (data as List)
-              .map((e) => deserialize<_i86.DictionaryImportProfile>(e))
+              .map((e) => deserialize<_i87.DictionaryImportProfile>(e))
               .toList()
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i87.EntryKnowledgeState>) {
+    if (t == List<_i88.EntryKnowledgeState>) {
       return (data as List)
-              .map((e) => deserialize<_i87.EntryKnowledgeState>(e))
+              .map((e) => deserialize<_i88.EntryKnowledgeState>(e))
               .toList()
           as T;
     }
-    if (t == List<_i88.KnowledgeStateResult>) {
+    if (t == List<_i89.KnowledgeStateResult>) {
       return (data as List)
-              .map((e) => deserialize<_i88.KnowledgeStateResult>(e))
+              .map((e) => deserialize<_i89.KnowledgeStateResult>(e))
               .toList()
           as T;
     }
-    if (t == List<_i89.KnowledgeStateQuery>) {
+    if (t == List<_i90.KnowledgeStateQuery>) {
       return (data as List)
-              .map((e) => deserialize<_i89.KnowledgeStateQuery>(e))
+              .map((e) => deserialize<_i90.KnowledgeStateQuery>(e))
               .toList()
           as T;
     }
-    if (t == List<_i90.AppNotification>) {
+    if (t == List<_i91.AppNotification>) {
       return (data as List)
-              .map((e) => deserialize<_i90.AppNotification>(e))
+              .map((e) => deserialize<_i91.AppNotification>(e))
               .toList()
           as T;
     }
-    if (t == List<_i91.ScriptConversionProfile>) {
+    if (t == List<_i92.ScriptConversionProfile>) {
       return (data as List)
-              .map((e) => deserialize<_i91.ScriptConversionProfile>(e))
+              .map((e) => deserialize<_i92.ScriptConversionProfile>(e))
               .toList()
           as T;
     }
-    if (t == List<_i92.ScriptConversionEntry>) {
+    if (t == List<_i93.ScriptConversionEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i92.ScriptConversionEntry>(e))
+              .map((e) => deserialize<_i93.ScriptConversionEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i93.WatchHistory>) {
+    if (t == List<_i94.WatchHistory>) {
       return (data as List)
-              .map((e) => deserialize<_i93.WatchHistory>(e))
+              .map((e) => deserialize<_i94.WatchHistory>(e))
               .toList()
           as T;
     }
@@ -991,45 +1001,51 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i94.SubtitleSearchResult>) {
+    if (t == List<_i95.SubtitleSearchResult>) {
       return (data as List)
-              .map((e) => deserialize<_i94.SubtitleSearchResult>(e))
+              .map((e) => deserialize<_i95.SubtitleSearchResult>(e))
               .toList()
           as T;
     }
-    if (t == List<_i95.SubtitleCueDetail>) {
+    if (t == List<_i96.SubtitleCueDetail>) {
       return (data as List)
-              .map((e) => deserialize<_i95.SubtitleCueDetail>(e))
+              .map((e) => deserialize<_i96.SubtitleCueDetail>(e))
               .toList()
           as T;
     }
-    if (t == List<_i96.SubtitleKaraokeSegment>) {
+    if (t == List<_i97.SubtitleKaraokeSegment>) {
       return (data as List)
-              .map((e) => deserialize<_i96.SubtitleKaraokeSegment>(e))
+              .map((e) => deserialize<_i97.SubtitleKaraokeSegment>(e))
               .toList()
           as T;
     }
-    if (t == List<_i97.SubtitleKaraokeSegmentInput>) {
+    if (t == List<_i98.SubtitleKaraokeSegmentInput>) {
       return (data as List)
-              .map((e) => deserialize<_i97.SubtitleKaraokeSegmentInput>(e))
+              .map((e) => deserialize<_i98.SubtitleKaraokeSegmentInput>(e))
               .toList()
           as T;
     }
-    if (t == List<_i98.VideoSeries>) {
+    if (t == List<_i99.VideoFeedItem>) {
       return (data as List)
-              .map((e) => deserialize<_i98.VideoSeries>(e))
+              .map((e) => deserialize<_i99.VideoFeedItem>(e))
               .toList()
           as T;
     }
-    if (t == List<_i99.WordList>) {
-      return (data as List).map((e) => deserialize<_i99.WordList>(e)).toList()
+    if (t == List<_i100.VideoSeries>) {
+      return (data as List)
+              .map((e) => deserialize<_i100.VideoSeries>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i101.WordList>) {
+      return (data as List).map((e) => deserialize<_i101.WordList>(e)).toList()
           as T;
     }
     try {
-      return _i100.Protocol().deserialize<T>(data, t);
+      return _i102.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i101.Protocol().deserialize<T>(data, t);
+      return _i103.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -1105,14 +1121,15 @@ class Protocol extends _i1.SerializationManager {
       _i67.VideoCommentRow => 'VideoCommentRow',
       _i68.VideoContentType => 'VideoContentType',
       _i69.VideoFavorite => 'VideoFavorite',
-      _i70.VideoLike => 'VideoLike',
-      _i71.VideoSeries => 'VideoSeries',
-      _i72.VideoStatus => 'VideoStatus',
-      _i73.WatchHistory => 'WatchHistory',
-      _i74.WordList => 'WordList',
-      _i75.WordListDetail => 'WordListDetail',
-      _i76.WordListItem => 'WordListItem',
-      _i77.WordListItemDetail => 'WordListItemDetail',
+      _i70.VideoFeedItem => 'VideoFeedItem',
+      _i71.VideoLike => 'VideoLike',
+      _i72.VideoSeries => 'VideoSeries',
+      _i73.VideoStatus => 'VideoStatus',
+      _i74.WatchHistory => 'WatchHistory',
+      _i75.WordList => 'WordList',
+      _i76.WordListDetail => 'WordListDetail',
+      _i77.WordListItem => 'WordListItem',
+      _i78.WordListItemDetail => 'WordListItemDetail',
       _ => null,
     };
   }
@@ -1266,28 +1283,30 @@ class Protocol extends _i1.SerializationManager {
         return 'VideoContentType';
       case _i69.VideoFavorite():
         return 'VideoFavorite';
-      case _i70.VideoLike():
+      case _i70.VideoFeedItem():
+        return 'VideoFeedItem';
+      case _i71.VideoLike():
         return 'VideoLike';
-      case _i71.VideoSeries():
+      case _i72.VideoSeries():
         return 'VideoSeries';
-      case _i72.VideoStatus():
+      case _i73.VideoStatus():
         return 'VideoStatus';
-      case _i73.WatchHistory():
+      case _i74.WatchHistory():
         return 'WatchHistory';
-      case _i74.WordList():
+      case _i75.WordList():
         return 'WordList';
-      case _i75.WordListDetail():
+      case _i76.WordListDetail():
         return 'WordListDetail';
-      case _i76.WordListItem():
+      case _i77.WordListItem():
         return 'WordListItem';
-      case _i77.WordListItemDetail():
+      case _i78.WordListItemDetail():
         return 'WordListItemDetail';
     }
-    className = _i100.Protocol().getClassNameForObject(data);
+    className = _i102.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i101.Protocol().getClassNameForObject(data);
+    className = _i103.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -1504,37 +1523,40 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'VideoFavorite') {
       return deserialize<_i69.VideoFavorite>(data['data']);
     }
+    if (dataClassName == 'VideoFeedItem') {
+      return deserialize<_i70.VideoFeedItem>(data['data']);
+    }
     if (dataClassName == 'VideoLike') {
-      return deserialize<_i70.VideoLike>(data['data']);
+      return deserialize<_i71.VideoLike>(data['data']);
     }
     if (dataClassName == 'VideoSeries') {
-      return deserialize<_i71.VideoSeries>(data['data']);
+      return deserialize<_i72.VideoSeries>(data['data']);
     }
     if (dataClassName == 'VideoStatus') {
-      return deserialize<_i72.VideoStatus>(data['data']);
+      return deserialize<_i73.VideoStatus>(data['data']);
     }
     if (dataClassName == 'WatchHistory') {
-      return deserialize<_i73.WatchHistory>(data['data']);
+      return deserialize<_i74.WatchHistory>(data['data']);
     }
     if (dataClassName == 'WordList') {
-      return deserialize<_i74.WordList>(data['data']);
+      return deserialize<_i75.WordList>(data['data']);
     }
     if (dataClassName == 'WordListDetail') {
-      return deserialize<_i75.WordListDetail>(data['data']);
+      return deserialize<_i76.WordListDetail>(data['data']);
     }
     if (dataClassName == 'WordListItem') {
-      return deserialize<_i76.WordListItem>(data['data']);
+      return deserialize<_i77.WordListItem>(data['data']);
     }
     if (dataClassName == 'WordListItemDetail') {
-      return deserialize<_i77.WordListItemDetail>(data['data']);
+      return deserialize<_i78.WordListItemDetail>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i100.Protocol().deserializeByClassName(data);
+      return _i102.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i101.Protocol().deserializeByClassName(data);
+      return _i103.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1549,10 +1571,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i100.Protocol().mapRecordToJson(record);
+      return _i102.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i101.Protocol().mapRecordToJson(record);
+      return _i103.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

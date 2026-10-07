@@ -1,0 +1,4 @@
+class: VideoFeedItem
+fields:
+  video: Video
+  coverUrl: String?

@@ -85,29 +85,16 @@ class _LanguageCategoryHomeSectionState
 
   Future<void> _load() async {
     try {
-      final rawVideos = await webClient.video.getVideos();
+      final feedItems = await webClient.video.getVideoFeed();
 
-      final usable = rawVideos
-          .where((video) => video.id != null)
+      final cards = feedItems
+          .where((item) => item.video.id != null)
           .take(12)
+          .map(
+            (item) =>
+                _HomeVideoCard(video: item.video, coverUrl: item.coverUrl),
+          )
           .toList();
-
-      final cards = await Future.wait(
-        usable.map((video) async {
-          String? coverUrl;
-          final coverKey = video.coverStorageKey?.trim();
-
-          if (coverKey != null && coverKey.isNotEmpty) {
-            try {
-              coverUrl = await webClient.video.getVideoUrl(path: coverKey);
-            } catch (_) {
-              coverUrl = null;
-            }
-          }
-
-          return _HomeVideoCard(video: video, coverUrl: coverUrl);
-        }),
-      );
 
       if (!mounted) return;
 

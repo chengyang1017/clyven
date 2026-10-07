@@ -271,6 +271,67 @@ class VideoEndpoint extends Endpoint {
     return savedVideo;
   }
 
+  Future<List<VideoFeedItem>> getVideoFeed(
+    Session session, {
+    VideoContentType? contentType,
+  }) async {
+    final videos = await Video.db.find(
+      session,
+      where: contentType == null
+          ? (table) =>
+                table.isPublic.equals(true) &
+                table.status.equals(VideoStatus.published)
+          : (table) =>
+                table.isPublic.equals(true) &
+                table.status.equals(VideoStatus.published) &
+                table.contentType.equals(contentType),
+      orderBy: (table) => table.createdAt,
+      orderDescending: true,
+    );
+
+    final items = await Future.wait(
+      videos.map((video) async {
+        String? coverUrl;
+
+        final coverKey = video.coverStorageKey?.trim();
+
+        if (coverKey != null && coverKey.isNotEmpty) {
+          try {
+            final uri = await session.storage.getPublicUrl(
+              storageId: 'public',
+              path: coverKey,
+            );
+
+            coverUrl = uri?.toString();
+          } catch (error, stackTrace) {
+            session.log(
+              'VIDEO_FEED_COVER_URL_FAILED '
+              'videoId=${video.id} '
+              'coverStorageKey=$coverKey '
+              'error=$error',
+              level: LogLevel.warning,
+              stackTrace: stackTrace,
+            );
+          }
+        }
+
+        return VideoFeedItem(
+          video: video,
+          coverUrl: coverUrl,
+        );
+      }),
+    );
+
+    session.log(
+      'VIDEO_FEED_REQUEST '
+      'viewerUserId=${session.authenticated?.userIdentifier ?? 'anonymous'} '
+      'contentType=${contentType?.name ?? 'all'} '
+      'returnedCount=${items.length}',
+    );
+
+    return items;
+  }
+
   Future<List<Video>> getVideos(
     Session session, {
     VideoContentType? contentType,
