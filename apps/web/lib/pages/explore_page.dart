@@ -32,22 +32,23 @@ class _ExplorePageState extends State<ExplorePage> {
 
     try {
       final videos = await webClient.video.getVideos();
-      final result = <_FeedVideo>[];
 
-      for (final video in videos) {
-        String? coverUrl;
+      final result = await Future.wait(
+        videos.map((video) async {
+          String? coverUrl;
 
-        final coverKey = video.coverStorageKey;
-        if (coverKey != null && coverKey.isNotEmpty) {
-          try {
-            coverUrl = await webClient.video.getVideoUrl(path: coverKey);
-          } catch (_) {
-            coverUrl = null;
+          final coverKey = video.coverStorageKey;
+          if (coverKey != null && coverKey.isNotEmpty) {
+            try {
+              coverUrl = await webClient.video.getVideoUrl(path: coverKey);
+            } catch (_) {
+              coverUrl = null;
+            }
           }
-        }
 
-        result.add(_FeedVideo(video: video, coverUrl: coverUrl));
-      }
+          return _FeedVideo(video: video, coverUrl: coverUrl);
+        }),
+      );
 
       setState(() {
         items = result;

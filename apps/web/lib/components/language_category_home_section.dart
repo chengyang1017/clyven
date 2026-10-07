@@ -89,25 +89,25 @@ class _LanguageCategoryHomeSectionState
 
       final usable = rawVideos
           .where((video) => video.id != null)
-          .take(36)
+          .take(12)
           .toList();
 
-      final cards = <_HomeVideoCard>[];
+      final cards = await Future.wait(
+        usable.map((video) async {
+          String? coverUrl;
+          final coverKey = video.coverStorageKey?.trim();
 
-      for (final video in usable) {
-        String? coverUrl;
-        final coverKey = video.coverStorageKey?.trim();
-
-        if (coverKey != null && coverKey.isNotEmpty) {
-          try {
-            coverUrl = await webClient.video.getVideoUrl(path: coverKey);
-          } catch (_) {
-            coverUrl = null;
+          if (coverKey != null && coverKey.isNotEmpty) {
+            try {
+              coverUrl = await webClient.video.getVideoUrl(path: coverKey);
+            } catch (_) {
+              coverUrl = null;
+            }
           }
-        }
 
-        cards.add(_HomeVideoCard(video: video, coverUrl: coverUrl));
-      }
+          return _HomeVideoCard(video: video, coverUrl: coverUrl);
+        }),
+      );
 
       if (!mounted) return;
 
@@ -247,7 +247,9 @@ class _LanguageCategoryHomeSectionState
         },
         [
           if (coverUrl == null)
-            span(classes: 'home-language-video-placeholder', [.text('GLYPHORA')]),
+            span(classes: 'home-language-video-placeholder', [
+              .text('GLYPHORA'),
+            ]),
           if (language != null)
             span(classes: 'home-language-video-language', [
               .text(_languageName(language)),
