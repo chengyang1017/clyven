@@ -10,10 +10,45 @@
   <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="glyphora-web.css">
   <script defer src="main.client.dart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.3/dist/hls.min.js"></script>
     <script>
       (() => {
         const players = new Map();
+
+        let hlsLoadPromise = null;
+
+        const ensureHlsLoaded = () => {
+          if (window.Hls) {
+            return Promise.resolve(window.Hls);
+          }
+
+          if (hlsLoadPromise) {
+            return hlsLoadPromise;
+          }
+
+          hlsLoadPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.7.3/dist/hls.min.js';
+            script.async = true;
+
+            script.onload = () => {
+              if (window.Hls) {
+                resolve(window.Hls);
+              } else {
+                hlsLoadPromise = null;
+                reject(new Error('hls.js loaded but window.Hls is unavailable'));
+              }
+            };
+
+            script.onerror = () => {
+              hlsLoadPromise = null;
+              reject(new Error('Failed to load hls.js'));
+            };
+
+            document.head.appendChild(script);
+          });
+
+          return hlsLoadPromise;
+        };
 
         const destroyPlayer = (videoId) => {
           const current = players.get(videoId);
@@ -23,7 +58,7 @@
           }
         };
 
-        document.addEventListener('glyphora-hls-attach', (event) => {
+        document.addEventListener('glyphora-hls-attach', async (event) => {
           const detail = event.detail || {};
           const videoId = detail.videoId;
           const url = detail.url;
@@ -36,49 +71,63 @@
 
           destroyPlayer(videoId);
 
-          if (window.Hls && window.Hls.isSupported()) {
-            const hls = new window.Hls({
-              capLevelToPlayerSize: true,
-              startLevel: -1,
-            });
-
-            players.set(videoId, hls);
-            hls.loadSource(url);
-            hls.attachMedia(video);
-
-            hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-              video.dispatchEvent(new CustomEvent('glyphora-hls-ready'));
-            });
-
-            hls.on(window.Hls.Events.ERROR, (_name, data) => {
-              if (!data || !data.fatal) return;
-
-              destroyPlayer(videoId);
-
-              if (fallbackUrl) {
-                const currentTime = video.currentTime || 0;
-                const wasPaused = video.paused;
-
-                video.src = fallbackUrl;
-                video.currentTime = currentTime;
-
-                if (!wasPaused) {
-                  video.play().catch(() => {});
-                }
-              }
-
-              video.dispatchEvent(
-                new CustomEvent('glyphora-hls-unavailable'),
-              );
-            });
-
-            return;
-          }
-
           if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.dispatchEvent(new CustomEvent('glyphora-hls-ready'));
             return;
+          }
+
+          try {
+            const Hls = await ensureHlsLoaded();
+
+            if (!document.getElementById(videoId)) {
+              return;
+            }
+
+            if (Hls.isSupported()) {
+              const hls = new Hls({
+                capLevelToPlayerSize: true,
+                startLevel: -1,
+              });
+
+              players.set(videoId, hls);
+              hls.loadSource(url);
+              hls.attachMedia(video);
+
+              hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.dispatchEvent(new CustomEvent('glyphora-hls-ready'));
+              });
+
+              hls.on(Hls.Events.ERROR, (_name, data) => {
+                if (!data || !data.fatal) return;
+
+                destroyPlayer(videoId);
+
+                if (fallbackUrl) {
+                  const currentTime = video.currentTime || 0;
+                  const wasPaused = video.paused;
+
+                  video.src = fallbackUrl;
+                  video.currentTime = currentTime;
+
+                  if (!wasPaused) {
+                    video.play().catch(() => {});
+                  }
+                }
+
+                video.dispatchEvent(
+                  new CustomEvent('glyphora-hls-unavailable'),
+                );
+              });
+
+              return;
+            }
+          } catch (_) {
+            // Fall through to the existing MP4/failure path below.
+          }
+
+          if (fallbackUrl) {
+            video.src = fallbackUrl;
           }
 
           video.dispatchEvent(
