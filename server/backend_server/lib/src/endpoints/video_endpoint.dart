@@ -274,11 +274,16 @@ class VideoEndpoint extends Endpoint {
   Future<VideoFeedPage> getVideoFeed(
     Session session, {
     VideoContentType? contentType,
-    int limit = 24,
-    int offset = 0,
+    int? limit,
+    int? offset,
   }) async {
-    final safeLimit = limit < 1 ? 1 : (limit > 100 ? 100 : limit);
-    final safeOffset = offset < 0 ? 0 : offset;
+    final requestedLimit = limit ?? 24;
+    final requestedOffset = offset ?? 0;
+
+    final safeLimit = requestedLimit < 1
+        ? 1
+        : (requestedLimit > 100 ? 100 : requestedLimit);
+    final safeOffset = requestedOffset < 0 ? 0 : requestedOffset;
 
     final videos = await Video.db.find(
       session,

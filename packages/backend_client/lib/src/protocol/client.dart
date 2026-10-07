@@ -1618,8 +1618,8 @@ class EndpointVideo extends _i2.EndpointRef {
 
   _i3.Future<_i47.VideoFeedPage> getVideoFeed({
     _i46.VideoContentType? contentType,
-    required int limit,
-    required int offset,
+    int? limit,
+    int? offset,
   }) => caller.callServerEndpoint<_i47.VideoFeedPage>(
     'video',
     'getVideoFeed',
