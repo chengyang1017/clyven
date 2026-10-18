@@ -76,7 +76,10 @@ jobs:
                   if value:
                       print("HTTP header", key + ":", "(present)" if key == "www-authenticate" else value[:120])
               body = exc.read(400).decode("utf-8", "replace")
-              print("HTTP response prefix:", body[:160].replace("\\n", " "))
+              if exc.code == 403 and "error-1010" in body.lower():
+                  print("Cloudflare Error 1010: request rejected at Cloudflare edge. Review Security Events for this staging hostname and the cf-ray above; no Serverpod response was obtained.")
+              else:
+                  print("HTTP response prefix:", body[:160].replace("\\n", " "))
               raise SystemExit("Video feed HTTP request failed (Neon checks will still run).")
           PY
       - name: Install Flutter SDK (includes Dart)
@@ -93,8 +96,10 @@ jobs:
           STAGING_HOST: ${{ secrets.GLYPHORA_CLOUDFLARE_PUBLIC_HOST }}
         run: dart run tool/staging_video_smoke.dart
       - name: Install PostgreSQL client
+        if: always()
         run: python3 -m pip install --quiet --disable-pip-version-check --break-system-packages 'psycopg[binary]'
       - name: Check isolated Neon database (SELECT only)
+        if: always()
         env:
           DB_HOST: ${{ secrets.GLYPHORA_STAGING_DB_HOST }}
           DB_NAME: ${{ secrets.GLYPHORA_STAGING_DB_NAME }}
@@ -141,8 +146,8 @@ jobs:
           DART_FEED_OUTCOME: ${{ steps.dart_feed.outcome }}
         run: |
           echo "Raw HTTP probe: $FEED_OUTCOME; Dart client probe: $DART_FEED_OUTCOME"
-          if [ "$DART_FEED_OUTCOME" != 'success' ]; then
-            echo 'Official Dart client did not pass. Neon verification is independent and may have passed.'
+          if [ "$FEED_OUTCOME" != 'success' ] || [ "$DART_FEED_OUTCOME" != 'success' ]; then
+            echo 'One or both video API probes failed. Review HTTP status, cf-ray, and separate Neon check above.'
             exit 1
           fi
           echo 'Video API smoke test passed.'
